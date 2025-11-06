@@ -41,6 +41,7 @@ setup(
         "ImageHash",
         "imagedominantcolor",
         "yt-dlp",
+        "chardet",
     ],
     python_requires=">=3.6",
     classifiers=[
