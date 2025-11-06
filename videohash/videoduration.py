@@ -3,6 +3,9 @@ from shutil import which
 from subprocess import PIPE, Popen
 from typing import Optional
 
+import chardet
+
+
 # Module to determine the length of video.
 # The length is found by the FFmpeg, the output of video_duration is in seconds.
 
@@ -29,9 +32,10 @@ def video_duration(video_path: str, ffmpeg_path: Optional[str] = None) -> float:
     process = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
     output, error = process.communicate()
 
+    encoding = chardet.detect(output).get("encoding") or chardet.detect(error).get("encoding") or "utf-8"
     match = re.search(
         r"Duration\:(\s\d?\d\d\:\d\d\:\d\d\.\d\d)\,",
-        (output.decode() + error.decode()),
+        (output.decode(encoding=encoding) + error.decode(encoding=encoding)),
     )
 
     if match:

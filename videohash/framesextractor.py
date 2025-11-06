@@ -5,6 +5,8 @@ from shutil import which
 from subprocess import PIPE, Popen, check_output
 from typing import Optional, Union
 
+import chardet
+
 from .exceptions import (
     FFmpegError,
     FFmpegFailedToExtractFrames,
@@ -156,9 +158,10 @@ class FramesExtractor:
 
             output, error = process.communicate()
 
+            encoding = chardet.detect(output).get("encoding") or chardet.detect(error).get("encoding") or "utf-8"
             matches = re.findall(
                 r"crop\=[0-9]{1,4}:[0-9]{1,4}:[0-9]{1,4}:[0-9]{1,4}",
-                (output.decode() + error.decode()),
+                (output.decode(encoding=encoding) + error.decode(encoding=encoding)),
             )
 
             for match in matches:
@@ -215,8 +218,10 @@ class FramesExtractor:
         process = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
         output, error = process.communicate()
 
-        ffmpeg_output = output.decode()
-        ffmpeg_error = error.decode()
+        encoding = chardet.detect(output).get("encoding") or "utf-8"
+        ffmpeg_output = output.decode(encoding=encoding)
+        encoding = chardet.detect(error).get("encoding") or "utf-8"
+        ffmpeg_error = error.decode(encoding=encoding)
 
         if len(os.listdir(self.output_dir)) == 0:
 
