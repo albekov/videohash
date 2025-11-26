@@ -212,7 +212,7 @@ class VideoHash:
 
             elif other.lower().startswith("0b"):
                 if len(other) != len(self.hash):
-                    raise ValueError("Can not compare different bits hashes. You must supply a %d bits hash." % self.bits_in_hash)
+                    raise ValueError(f"Can not compare different bits hashes. You must supply a {self.bits_in_hash} bits hash.")
                 return self.hamming_distance(string_a=self.hash, string_b=other.lower())
 
             else:

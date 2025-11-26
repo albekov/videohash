@@ -83,8 +83,8 @@ def validate_image(number_tiles):
 
     try:
         number_tiles = int(number_tiles)
-    except BaseException:
-        raise ValueError("number_tiles could not be cast to integer.")
+    except BaseException as e:
+        raise ValueError("number_tiles could not be cast to integer.") from e
 
     if number_tiles > TILE_LIMIT or number_tiles < 2:
         raise ValueError(
