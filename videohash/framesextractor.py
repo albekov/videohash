@@ -3,7 +3,6 @@ import re
 import shlex
 from shutil import which
 from subprocess import PIPE, Popen, check_output
-from typing import Optional, Union
 
 import chardet
 
@@ -20,7 +19,6 @@ from .utils import does_path_exists
 
 
 class FramesExtractor:
-
     """
     Extract frames from the input video file and save at the output directory(frame storage directory).
     """
@@ -29,8 +27,8 @@ class FramesExtractor:
         self,
         video_path: str,
         output_dir: str,
-        interval: Union[int, float] = 1,
-        ffmpeg_path: Optional[str] = None,
+        interval: int | float = 1,
+        ffmpeg_path: str | None = None,
     ) -> None:
         """
         Raises Exeception if video_path does not exists.
@@ -62,14 +60,10 @@ class FramesExtractor:
             self.ffmpeg_path = ffmpeg_path
 
         if not does_path_exists(self.video_path):
-            raise FileNotFoundError(
-                f"No video found at '{self.video_path}' for frame extraction."
-            )
+            raise FileNotFoundError(f"No video found at '{self.video_path}' for frame extraction.")
 
         if not does_path_exists(self.output_dir):
-            raise FramesExtractorOutPutDirDoesNotExist(
-                f"No directory called '{self.output_dir}' found for storing the frames."
-            )
+            raise FramesExtractorOutPutDirDoesNotExist(f"No directory called '{self.output_dir}' found for storing the frames.")
 
         self._check_ffmpeg()
 
@@ -86,15 +80,12 @@ class FramesExtractor:
         """
 
         if not self.ffmpeg_path:
-
             if not which("ffmpeg"):
-
                 raise FFmpegNotFound(
                     "FFmpeg is not on the system path. Install FFmpeg and add it to the path."
                     + "Or you can also pass the path via the 'ffmpeg_path' parameter."
                 )
             else:
-
                 self.ffmpeg_path = str(which("ffmpeg"))
 
         # Check the ffmpeg
@@ -106,17 +97,14 @@ class FramesExtractor:
             raise FFmpegNotFound(f"FFmpeg not found at '{self.ffmpeg_path}'.")
 
         else:
-
             if "ffmpeg version" not in output:
-                raise FFmpegError(
-                    f"ffmpeg at '{self.ffmpeg_path}' is not really ffmpeg. Output of ffmpeg -version is \n'{output}'."
-                )
+                raise FFmpegError(f"ffmpeg at '{self.ffmpeg_path}' is not really ffmpeg. Output of ffmpeg -version is \n'{output}'.")
 
     @staticmethod
     def detect_crop(
-        video_path: Optional[str] = None,
+        video_path: str | None = None,
         frames: int = 3,
-        ffmpeg_path: Optional[str] = None,
+        ffmpeg_path: str | None = None,
     ) -> str:
         """
         Detects the the amount of cropping to remove black bars.
@@ -151,7 +139,6 @@ class FramesExtractor:
         crop_list = []
 
         for start_time in time_start_list:
-
             command = f'"{ffmpeg_path}" -ss {start_time} -i "{video_path}" -vframes {frames} -vf cropdetect -f null -'
 
             process = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
@@ -196,9 +183,7 @@ class FramesExtractor:
             video_path = shlex.quote(self.video_path)
             output_dir = shlex.quote(self.output_dir)
 
-        crop = FramesExtractor.detect_crop(
-            video_path=video_path, frames=3, ffmpeg_path=ffmpeg_path
-        )
+        crop = FramesExtractor.detect_crop(video_path=video_path, frames=3, ffmpeg_path=ffmpeg_path)
 
         command = (
             f'"{ffmpeg_path}"'
@@ -224,7 +209,4 @@ class FramesExtractor:
         ffmpeg_error = error.decode(encoding=encoding)
 
         if len(os.listdir(self.output_dir)) == 0:
-
-            raise FFmpegFailedToExtractFrames(
-                f"FFmpeg could not extract any frames.\n{command}\n{ffmpeg_output}\n{ffmpeg_error}"
-            )
+            raise FFmpegFailedToExtractFrames(f"FFmpeg could not extract any frames.\n{command}\n{ffmpeg_output}\n{ffmpeg_error}")

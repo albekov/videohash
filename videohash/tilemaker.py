@@ -46,9 +46,7 @@ class Tile:
     def column(self):
         return self.position[1]
 
-    def generate_filename(
-        self, directory=os.getcwd(), prefix="tile", file_format="png", path=True
-    ):
+    def generate_filename(self, directory=os.getcwd(), prefix="tile", file_format="png", path=True):
         """Construct and return a filename for this tile."""
         filename = prefix + "_{col:02d}_{row:02d}.{ext}".format(
             col=self.column,
@@ -88,10 +86,8 @@ def validate_image(number_tiles):
 
     if number_tiles > TILE_LIMIT or number_tiles < 2:
         raise ValueError(
-            "Number of tiles must be between 2 and {} (you \
-                          asked for {}).".format(
-                TILE_LIMIT, number_tiles
-            )
+            f"Number of tiles must be between 2 and {TILE_LIMIT} (you \
+                          asked for {number_tiles})."
         )
 
 
@@ -109,9 +105,7 @@ def save_tiles(tiles, prefix="", directory=os.getcwd(), file_format="png"):
     """
     for tile in tiles:
         tile.save(
-            filename=tile.generate_filename(
-                prefix=prefix, directory=directory, file_format=file_format
-            ),
+            filename=tile.generate_filename(prefix=prefix, directory=directory, file_format=file_format),
             file_format=file_format,
         )
     return tuple(tiles)
@@ -123,7 +117,6 @@ def slicer(
     col=None,
     row=None,
 ):
-
     Image.MAX_IMAGE_PIXELS = None
 
     im = Image.open(filename)
@@ -152,9 +145,7 @@ def slicer(
     return tuple(tiles)
 
 
-def concatenate_video_frames_horizontally(
-    frames_dir, horizontally_concatenated_image_path
-) -> None:
+def concatenate_video_frames_horizontally(frames_dir, horizontally_concatenated_image_path) -> None:
     image_file_names = get_list_of_all_files_in_dir(frames_dir)
     total_images = len(image_file_names)
     first_image_filename = image_file_names[0]
@@ -174,9 +165,7 @@ def concatenate_video_frames_horizontally(
 
 
 def make_tile(frames_dir, horizontally_concatenated_image_path, tiles_dir) -> None:
-    concatenate_video_frames_horizontally(
-        frames_dir, horizontally_concatenated_image_path
-    )
+    concatenate_video_frames_horizontally(frames_dir, horizontally_concatenated_image_path)
     tiles = list(
         slicer(
             horizontally_concatenated_image_path,

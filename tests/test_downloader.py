@@ -11,9 +11,7 @@ from videohash.utils import (
 
 
 def test_all():
-    _dir = os.path.join(
-        create_and_return_temporary_directory(), "/gduisgf73r7guai7td7g38yisif7si7/"
-    )
+    _dir = os.path.join(create_and_return_temporary_directory(), "/gduisgf73r7guai7td7g38yisif7si7/")
 
     with pytest.raises(DownloadOutPutDirDoesNotExist):
         Download(url="https://example.com", output_dir=_dir)

@@ -9,7 +9,6 @@ from .utils import does_path_exists, get_list_of_all_files_in_dir
 
 
 class Download:
-
     """
     Class that downloads the video prior to frames extraction.
 
@@ -62,19 +61,7 @@ class Download:
         if self.worst:
             worst = " -f worst "
 
-        command = (
-            f'"{self.yt_dlp_path}"'
-            + worst
-            + " "
-            + '"'
-            + self.url
-            + '"'
-            + " -o "
-            + '"'
-            + self.output_dir
-            + "video_file.%(ext)s"
-            + '"'
-        )
+        command = f'"{self.yt_dlp_path}"' + worst + " " + '"' + self.url + '"' + " -o " + '"' + self.output_dir + "video_file.%(ext)s" + '"'
 
         process = Popen(command, shell=True, stdout=PIPE, stderr=PIPE)
         output, error = process.communicate()
@@ -83,6 +70,5 @@ class Download:
 
         if len(get_list_of_all_files_in_dir(self.output_dir)) == 0:
             raise DownloadFailed(
-                f"'{self.yt_dlp_path}' failed to download the video at"
-                + f" '{self.url}'.\n{yt_dlp_output}\n{yt_dlp_error}"
+                f"'{self.yt_dlp_path}' failed to download the video at" + f" '{self.url}'.\n{yt_dlp_output}\n{yt_dlp_error}"
             )

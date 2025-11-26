@@ -1,16 +1,14 @@
 import re
 from shutil import which
 from subprocess import PIPE, Popen
-from typing import Optional
 
 import chardet
-
 
 # Module to determine the length of video.
 # The length is found by the FFmpeg, the output of video_duration is in seconds.
 
 
-def video_duration(video_path: str, ffmpeg_path: Optional[str] = None) -> float:
+def video_duration(video_path: str, ffmpeg_path: str | None = None) -> float:
     """
     Retrieve the exact video duration as echoed by the FFmpeg and return
     the duration in seconds. Maximum duration supported is 999 hours, above

@@ -1,6 +1,5 @@
 import os
 from math import ceil, sqrt
-from typing import List
 
 from PIL import Image
 
@@ -11,9 +10,8 @@ from .utils import does_path_exists
 # images are the extracted frames of the input video.
 
 
-
 def make_collage(
-    image_list: List[str],
+    image_list: list[str],
     output_path: str,
     collage_image_width: int = 1024,
 ) -> None:
@@ -87,13 +85,10 @@ def make_collage(
 
     output_path_dir = os.path.dirname(output_path) + "/"
     if not does_path_exists(output_path_dir):
-        raise FileNotFoundError(
-            "Directory at which output collage is to be saved does not exists."
-        )
+        raise FileNotFoundError("Directory at which output collage is to be saved does not exists.")
 
     # arbitrarily selecting the first image from the list, index 0
     with Image.open(image_list[0]) as first_frame_image_in_list:
-
         # Find the width and height of the first image of the list.
         # Assuming all the images have same size.
         frame_image_width, frame_image_height = first_frame_image_in_list.size
@@ -103,9 +98,7 @@ def make_collage(
 
     # The scale will always lie between 0 and 1, which implies that
     # the images are always going to get downsized.
-    scale = (collage_image_width) / (
-        images_per_row_in_collage * frame_image_width
-    )
+    scale = (collage_image_width) / (images_per_row_in_collage * frame_image_width)
 
     # Calculating the scaled height and width for the frame image.
     scaled_frame_image_width = ceil(frame_image_width * scale)
@@ -123,16 +116,13 @@ def make_collage(
     # Create an image of passed collage_image_width and calculated collage_image_height.
     # The downsized images will be pasted on this new base image.
     # The image is 0,0,0 RGB(black).
-    collage_image = Image.new(
-        "RGB", (collage_image_width, collage_image_height)
-    )
+    collage_image = Image.new("RGB", (collage_image_width, collage_image_height))
 
     # keep track of the x and y coordinates of the resized frame images
     i, j = (0, 0)
 
     # iterate the frames and paste them on their position on the collage_image
     for count, frame_path in enumerate(image_list):
-
         # Set the x coordinate to zero if we are on the first column
         # If images_per_row_in_collage is 4
         # then 0,4,8 and so on should have their x coordinate as 0
@@ -143,9 +133,7 @@ def make_collage(
         frame = Image.open(frame_path)
 
         # scale the opened frame images
-        frame.thumbnail(
-            (scaled_frame_image_width, scaled_frame_image_height), Image.Resampling.LANCZOS
-        )
+        frame.thumbnail((scaled_frame_image_width, scaled_frame_image_height), Image.Resampling.LANCZOS)
 
         # set the value of x to that of i's value.
         # i is set to 0 if we are on the first column.

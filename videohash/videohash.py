@@ -2,9 +2,8 @@ import os
 import random
 import re
 import shutil
-from pathlib import Path
 from math import ceil
-from typing import List, Optional, Union
+from pathlib import Path
 
 import imagehash
 import numpy as np
@@ -24,7 +23,6 @@ from .videoduration import video_duration
 
 
 class VideoHash:
-
     """
     VideoHash class provides an interface for computing & comparing the video
     hash values for videos(codec, containers etc) supported by FFmpeg.
@@ -32,10 +30,10 @@ class VideoHash:
 
     def __init__(
         self,
-        path: Optional[str] = None,
-        url: Optional[str] = None,
-        storage_path: Optional[str] = None,
-        frame_interval: Union[int, float] = 1,
+        path: str | None = None,
+        url: str | None = None,
+        storage_path: str | None = None,
+        frame_interval: int | float = 1,
     ) -> None:
         """
         :param path: Absolute path of the input video file.
@@ -92,9 +90,7 @@ class VideoHash:
             collage_image_width=1024,
         )
 
-        make_tile(
-            self.frames_dir, self.horizontally_concatenated_image_path, self.tiles_dir
-        )
+        make_tile(self.frames_dir, self.horizontally_concatenated_image_path, self.tiles_dir)
 
         self.image = Image.open(self.collage_path)
         self.bits_in_hash = 64
@@ -208,46 +204,31 @@ class VideoHash:
             raise TypeError("Other hash is None. And it should not be None.")
 
         if isinstance(other, str):
-
             if other.lower().startswith("0x"):
-
                 return self.hamming_distance(
                     string_a=self.hash,
                     string_b=VideoHash.hex2bin(other.lower(), self.bits_in_hash),
                 )
 
             elif other.lower().startswith("0b"):
-
                 if len(other) != len(self.hash):
-                    raise ValueError(
-                        "Can not compare different bits hashes. You must supply a %d bits hash."
-                        % self.bits_in_hash
-                    )
+                    raise ValueError("Can not compare different bits hashes. You must supply a %d bits hash." % self.bits_in_hash)
                 return self.hamming_distance(string_a=self.hash, string_b=other.lower())
 
             else:
-
-                raise TypeError(
-                    "Hash string must start with either '0x' for hexadecimal or '0b' for binary."
-                )
+                raise TypeError("Hash string must start with either '0x' for hexadecimal or '0b' for binary.")
 
         if isinstance(other, list):
-
             if len(other) != self.bits_in_hash:
-                raise ValueError(
-                    f"The list does not have {self.bits_in_hash} bits. Can not calculate hamming distance."
-                )
+                raise ValueError(f"The list does not have {self.bits_in_hash} bits. Can not calculate hamming distance.")
 
             return self.hamming_distance(bitlist_a=self.bitlist, bitlist_b=other)
 
         if isinstance(other, VideoHash):
-            return self.hamming_distance(
-                bitlist_a=self.bitlist, bitlist_b=other.bitlist
-            )
+            return self.hamming_distance(bitlist_a=self.bitlist, bitlist_b=other.bitlist)
 
         raise TypeError(
-            "To calculate difference both of the hashes must be either "
-            + "hexadecimal/binary strings or instance of VideoHash class."
+            "To calculate difference both of the hashes must be either " + "hexadecimal/binary strings or instance of VideoHash class."
         )
 
     def _copy_video_to_video_dir(self) -> None:
@@ -286,7 +267,6 @@ class VideoHash:
 
             shutil.copyfile(self.path, self.video_path)
 
-
     def _create_required_dirs_and_check_for_errors(self) -> None:
         """
         Creates important directories before the main processing starts.
@@ -315,22 +295,16 @@ class VideoHash:
         if not self.storage_path:
             self.storage_path = create_and_return_temporary_directory()
         if not does_path_exists(self.storage_path):
-            raise StoragePathDoesNotExist(
-                f"Storage path '{self.storage_path}' does not exist."
-            )
+            raise StoragePathDoesNotExist(f"Storage path '{self.storage_path}' does not exist.")
 
         os_path_sep = os.path.sep
 
-        self.storage_path = os.path.join(
-            self.storage_path, (f"{self.task_uid}{os_path_sep}")
-        )
+        self.storage_path = os.path.join(self.storage_path, (f"{self.task_uid}{os_path_sep}"))
 
         self.video_dir = os.path.join(self.storage_path, (f"video{os_path_sep}"))
         Path(self.video_dir).mkdir(parents=True, exist_ok=True)
 
-        self.video_download_dir = os.path.join(
-            self.storage_path, (f"downloadedvideo{os_path_sep}")
-        )
+        self.video_download_dir = os.path.join(self.storage_path, (f"downloadedvideo{os_path_sep}"))
         Path(self.video_download_dir).mkdir(parents=True, exist_ok=True)
 
         self.frames_dir = os.path.join(self.storage_path, (f"frames{os_path_sep}"))
@@ -342,12 +316,8 @@ class VideoHash:
         self.collage_dir = os.path.join(self.storage_path, (f"collage{os_path_sep}"))
         Path(self.collage_dir).mkdir(parents=True, exist_ok=True)
 
-        self.horizontally_concatenated_image_dir = os.path.join(
-            self.storage_path, (f"horizontally_concatenated_image{os_path_sep}")
-        )
-        Path(self.horizontally_concatenated_image_dir).mkdir(
-            parents=True, exist_ok=True
-        )
+        self.horizontally_concatenated_image_dir = os.path.join(self.storage_path, (f"horizontally_concatenated_image{os_path_sep}"))
+        Path(self.horizontally_concatenated_image_dir).mkdir(parents=True, exist_ok=True)
 
     def is_similar(self, other: object) -> bool:
         """
@@ -393,10 +363,7 @@ class VideoHash:
         directory = self.storage_path
 
         if not self._storage_path:
-            directory = (
-                os.path.dirname(os.path.dirname(os.path.dirname(self.storage_path)))
-                + os.path.sep
-            )
+            directory = os.path.dirname(os.path.dirname(os.path.dirname(self.storage_path))) + os.path.sep
 
         shutil.rmtree(directory, ignore_errors=True, onerror=None)
 
@@ -416,19 +383,14 @@ class VideoHash:
         """
         sys_random = random.SystemRandom()
 
-        return "".join(
-            sys_random.choice(
-                "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
-            )
-            for _ in range(20)
-        )
+        return "".join(sys_random.choice("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789") for _ in range(20))
 
     def hamming_distance(
         self,
-        string_a: Optional[str] = None,
-        string_b: Optional[str] = None,
-        bitlist_a: Optional[List[int]] = None,
-        bitlist_b: Optional[List[int]] = None,
+        string_a: str | None = None,
+        string_b: str | None = None,
+        bitlist_a: list[int] | None = None,
+        bitlist_b: list[int] | None = None,
     ) -> int:
         """
         Computes the hamming distance of the input bitstrings or bitlists.
@@ -445,22 +407,17 @@ class VideoHash:
                             not defined for unequal length strings.
         """
         if bitlist_a and bitlist_b:
-
             if len(bitlist_a) != len(bitlist_b):
                 raise ValueError(
-                    "Bit lists have unequal number of bits."
-                    + " Can not compute hamming distance. Hamming distance is undefined."
+                    "Bit lists have unequal number of bits." + " Can not compute hamming distance. Hamming distance is undefined."
                 )
 
             _bitlist_a = bitlist_a
             _bitlist_b = bitlist_b
 
         if string_a and string_b:
-
             if len(string_a) != len(string_b):
-                raise ValueError(
-                    "Strings are of unequal length. Can not compute hamming distance. Hamming distance is undefined."
-                )
+                raise ValueError("Strings are of unequal length. Can not compute hamming distance. Hamming distance is undefined.")
 
             if string_a == self.hash:
                 _bitlist_a = self.bitlist
@@ -533,11 +490,11 @@ class VideoHash:
         :rtype: NoneType
         """
 
-        self.bitlist: List = []
+        self.bitlist: list = []
 
-        self.whash_bitlist: List = []
+        self.whash_bitlist: list = []
 
-        self.dominant_color_bitlist: List = []
+        self.dominant_color_bitlist: list = []
 
         for row in imagehash.whash(self.image).hash.astype(int).tolist():
             self.whash_bitlist.extend(row)
@@ -635,7 +592,6 @@ class VideoHash:
         self.hash: str = ""
 
         for bit in self.bitlist:
-
             if bit:
                 self.hash += "1"
             else:
