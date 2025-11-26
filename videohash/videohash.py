@@ -30,16 +30,13 @@ class VideoHash:
 
     def __init__(
         self,
-        path: str | None = None,
-        url: str | None = None,
+        path: str,
         storage_path: str | None = None,
+        download_worst: bool = True,
         frame_interval: int | float = 1,
     ) -> None:
         """
         :param path: Absolute path of the input video file.
-
-        :param url: URL of the input video file. Every URL that is supported by
-                    the yt-dlp package can be passed.
 
         :param storage_path: Storage path for the files created/downloaded by
                              the instance, pass the absolute path of the
@@ -54,13 +51,15 @@ class VideoHash:
                                Smaller frame_interval implies fewer frames and
                                vice-versa.
 
+        :param download_worst: If set to True, downloads the worst quality video
+                               available. Default is True.
+
 
         :return: None
 
         :rtype: NoneType
         """
         self.path = path
-        self.url = url
 
         self.storage_path = ""
         if storage_path:
@@ -68,6 +67,7 @@ class VideoHash:
 
         self._storage_path = self.storage_path
         self.frame_interval = frame_interval
+        self.download_worst = download_worst
 
         self.task_uid = VideoHash._get_task_uid()
 
@@ -253,19 +253,18 @@ class VideoHash:
         """
         self.video_path: str = ""
 
-        if self.path:
-            # create a copy of the video at self.storage_path
-            match = re.search(r"\.([^.]+$)", self.path)
+        # create a copy of the video at self.storage_path
+        match = re.search(r"\.([^.]+$)", self.path)
 
-            if match:
-                extension = match.group(1)
+        if match:
+            extension = match.group(1)
 
-            else:
-                raise ValueError("File name (path) does not have an extension.")
+        else:
+            raise ValueError("File name (path) does not have an extension.")
 
-            self.video_path = os.path.join(self.video_dir, (f"video.{extension}"))
+        self.video_path = os.path.join(self.video_dir, (f"video.{extension}"))
 
-            shutil.copyfile(self.path, self.video_path)
+        shutil.copyfile(self.path, self.video_path)
 
     def _create_required_dirs_and_check_for_errors(self) -> None:
         """
