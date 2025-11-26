@@ -85,9 +85,7 @@ from .__version__ import (
 )
 from .exceptions import (
     CollageOfZeroFramesError,
-    DidNotSupplyPathOrUrl,
-    DownloadFailed,
-    DownloadOutPutDirDoesNotExist,
+    DidNotSupplyPath,
     FFmpegError,
     FFmpegFailedToExtractFrames,
     FFmpegNotFound,

@@ -29,16 +29,9 @@ class FramesExtractorOutPutDirDoesNotExist(VideoHashError):
     pass
 
 
-class DownloadOutPutDirDoesNotExist(VideoHashError):
+class DidNotSupplyPath(VideoHashError):
 
-    """The output directory passed to downloader for storing the downloaded video does not exist."""
-
-    pass
-
-
-class DidNotSupplyPathOrUrl(VideoHashError):
-
-    """Must supply either a path for the video or a valid URL"""
+    """Must supply a path for the video"""
 
     pass
 
@@ -46,13 +39,6 @@ class DidNotSupplyPathOrUrl(VideoHashError):
 class CollageOfZeroFramesError(VideoHashError):
 
     """Raised if zero frames are passed for collage making."""
-
-    pass
-
-
-class DownloadFailed(VideoHashError):
-
-    """Download software failed to download the video from the url."""
 
     pass
 

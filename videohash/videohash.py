@@ -12,8 +12,7 @@ from imagedominantcolor import DominantColor
 from PIL import Image
 
 from .collagemaker import make_collage
-from .downloader import Download
-from .exceptions import DidNotSupplyPathOrUrl, StoragePathDoesNotExist
+from .exceptions import DidNotSupplyPath, StoragePathDoesNotExist
 from .framesextractor import FramesExtractor
 from .tilemaker import make_tile
 from .utils import (
@@ -36,7 +35,6 @@ class VideoHash:
         path: Optional[str] = None,
         url: Optional[str] = None,
         storage_path: Optional[str] = None,
-        download_worst: bool = False,
         frame_interval: Union[int, float] = 1,
     ) -> None:
         """
@@ -51,9 +49,6 @@ class VideoHash:
                              If no argument is passed then the instance will
                              itself create the storage directory inside the
                              temporary directory of the system.
-
-        :param download_worst: If set to True, download the worst quality video.
-                               The default value is False, set True to conserve bandwidth.
 
         :param frame_interval: Number of frames extracted per unit time, the
                                default value is 1 per unit time. For 1 frame
@@ -74,7 +69,6 @@ class VideoHash:
             self.storage_path = storage_path
 
         self._storage_path = self.storage_path
-        self.download_worst = download_worst
         self.frame_interval = frame_interval
 
         self.task_uid = VideoHash._get_task_uid()
@@ -292,25 +286,6 @@ class VideoHash:
 
             shutil.copyfile(self.path, self.video_path)
 
-        if self.url:
-
-            Download(
-                self.url,
-                self.video_download_dir,
-                worst=self.download_worst,
-            )
-
-            downloaded_file = get_list_of_all_files_in_dir(self.video_download_dir)[0]
-            match = re.search(r"\.(.*?)$", downloaded_file)
-
-            extension = "mkv"
-
-            if match:
-                extension = match.group(1)
-
-            self.video_path = f"{self.video_dir}video.{extension}"
-
-            shutil.copyfile(downloaded_file, self.video_path)
 
     def _create_required_dirs_and_check_for_errors(self) -> None:
         """
@@ -321,9 +296,7 @@ class VideoHash:
         generated files.
 
 
-        :raises DidNotSupplyPathOrUrl: If the user forgot to specify both the
-                                       path and the url. One of them must be
-                                       specified for creating the object.
+        :raises DidNotSupplyPath: If the user forgot to specify the path.
 
         :raises ValueError: If user passed both path and url. Only pass
                             one of them if the file is available on both
@@ -336,13 +309,8 @@ class VideoHash:
 
         :rtype: NoneType
         """
-        if not self.path and not self.url:
-            raise DidNotSupplyPathOrUrl(
-                "You must specify either a path or an URL of the video."
-            )
-
-        if self.path and self.url:
-            raise ValueError("Specify either a path or an URL and NOT both.")
+        if not self.path:
+            raise DidNotSupplyPath()
 
         if not self.storage_path:
             self.storage_path = create_and_return_temporary_directory()
