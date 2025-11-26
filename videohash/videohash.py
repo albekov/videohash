@@ -11,7 +11,7 @@ import numpy as np
 from imagedominantcolor import DominantColor
 from PIL import Image
 
-from .collagemaker import MakeCollage
+from .collagemaker import make_collage
 from .downloader import Download
 from .exceptions import DidNotSupplyPathOrUrl, StoragePathDoesNotExist
 from .framesextractor import FramesExtractor
@@ -92,7 +92,7 @@ class VideoHash:
             "horizontally_concatenated_image.png",
         )
 
-        MakeCollage(
+        make_collage(
             get_list_of_all_files_in_dir(self.frames_dir),
             self.collage_path,
             collage_image_width=1024,
