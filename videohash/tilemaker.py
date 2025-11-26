@@ -46,8 +46,10 @@ class Tile:
     def column(self):
         return self.position[1]
 
-    def generate_filename(self, directory=os.getcwd(), prefix="tile", file_format="png", path=True):
+    def generate_filename(self, directory=None, prefix="tile", file_format="png", path=True):
         """Construct and return a filename for this tile."""
+        if directory is None:
+            directory = os.getcwd()
         filename = prefix + "_{col:02d}_{row:02d}.{ext}".format(
             col=self.column,
             row=self.row,
@@ -91,7 +93,9 @@ def validate_image(number_tiles):
         )
 
 
-def save_tiles(tiles, prefix="", directory=os.getcwd(), file_format="png"):
+def save_tiles(tiles, prefix="", directory=None, file_format="png"):
+    if directory is None:
+        directory = os.getcwd()
     """
     Write image files to disk. Create specified folder(s) if they
        don't exist. Return list of :class:`Tile` instance.
