@@ -95,3 +95,25 @@ from .exceptions import (
 )
 from .videoduration import video_duration
 from .videohash import VideoHash
+
+__all__ = [
+    "__author__",
+    "__author_email__",
+    "__copyright__",
+    "__description__",
+    "__license__",
+    "__status__",
+    "__title__",
+    "__url__",
+    "__version__",
+    "CollageOfZeroFramesError",
+    "DidNotSupplyPath",
+    "FFmpegError",
+    "FFmpegFailedToExtractFrames",
+    "FFmpegNotFound",
+    "FramesExtractorOutPutDirDoesNotExist",
+    "StoragePathDoesNotExist",
+    "VideoHashError",
+    "video_duration",
+    "VideoHash",
+]
