@@ -9,19 +9,73 @@ dependencies = [
     "imagedominantcolor>=1.0.1",
     "imagehash>=4.3.2",
     "pillow>=12.0.0",
-    "yt-dlp>=2025.11.12",
 ]
 
 [dependency-groups]
 dev = [
-    "black>=25.11.0",
     "codecov>=2.1.13",
-    "flake8>=7.3.0",
     "mypy>=1.18.2",
     "patool>=4.0.2",
     "pytest>=9.0.1",
     "pytest-cov>=7.0.0",
     "pyunpack>=0.3",
     "requests>=2.32.5",
+    "ruff>=0.14.6",
     "types-pillow>=10.2.0.20240822",
 ]
+
+[tool.pytest]
+python_files = [
+    "test_*.py",
+    "tests.py",
+]
+pythonpath = ["."]
+
+[tool.ruff]
+target-version = "py313"
+exclude = [
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".mypy_cache",
+    ".ruff_cache",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+]
+line-length = 140
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # Pyflakes
+    "I",   # isort
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+    "C90", # McCabe complexity
+]
+ignore = [
+    "SIM1",
+    "UP046",
+]
+
+# Automatically fixable rules
+fixable = ["ALL"]
+unfixable = []
+
+[tool.ruff.lint.mccabe]
+max-complexity = 15
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "lf"
+
+[tool.mypy]
+plugins = []
+disallow_untyped_defs = false
+no_implicit_optional = true
+exclude = []
