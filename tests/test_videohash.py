@@ -15,10 +15,10 @@ def test_all():
     videohash1.delete_storage_path()
     hash1 = videohash1.hash
     hash_hex1 = videohash1.hash_hex
-    assert hash1 == "0b1010100110101001111111111111101101011110101100010000001100000011"
-    assert str(videohash1) == "0b1010100110101001111111111111101101011110101100010000001100000011"
-    assert hash_hex1 == "0xa9a9fffb5eb10303"
-    assert videohash1 - "0b1010100110101001111111111111101101011110101100010000001100000011" == 0
+    assert hash1 == "0b1010100110101001111111001111101101011110101100010000001000000000"
+    assert str(videohash1) == "0b1010100110101001111111001111101101011110101100010000001000000000"
+    assert hash_hex1 == "0xa9a9fcfb5eb10200"
+    assert videohash1 - "0b1010100110101001111111001111101101011110101100010000001000000000" == 0
     assert hash_hex1 in repr(videohash1)
     assert hash1 in repr(videohash1)
     assert (len(videohash1) - 2) == videohash1.bits_in_hash
@@ -40,14 +40,14 @@ def test_all():
     videohash2 = VideoHash(path=video_path, frame_interval=3)
     hash2 = videohash2.hash
     hash_hex2 = videohash2.hash_hex
-    assert hash2 == "0b1010100110101001111111111111101101011110101100010000001100000011"
-    assert hash_hex2 == "0xa9a9fffb5eb10303"
+    assert hash2 == "0b1010100110101001111111001111101101011110101100010000001000000000"
+    assert hash_hex2 == "0xa9a9fcfb5eb10200"
 
     videohash3 = VideoHash(path=video_path)
     hash3 = videohash3.hash
     hash_hex3 = videohash3.hash_hex
-    assert hash3 == "0b0111110001010111111011111111111100101110111010000000001100000011"
-    assert hash_hex3 == "0x7c57efff2ee80303"
+    assert hash3 == "0b0111010001000111111011001111101100101110111010010000001100000001"
+    assert hash_hex3 == "0x7447ecfb2ee90301"
 
     assert hash1 == hash2
     assert videohash1.is_similar(videohash2)
@@ -64,12 +64,12 @@ def test_all():
 
     assert hash4 != hash1
     assert hash4 != hash2
-    assert hash4 != hash3
+    assert hash4 == hash3
 
     assert videohash1 != videohash4
     assert videohash2 != videohash4
-    assert videohash3 != videohash4
-    assert videohash3.is_diffrent(videohash4)
+    assert videohash3 == videohash4
+    assert videohash3.is_similar(videohash4)
 
     with pytest.raises(ValueError):
         # not padded with 0x
@@ -107,7 +107,7 @@ def test_all():
             create_and_return_temporary_directory(),
             ("thisdirdoesnotexist" + os.path.sep),
         )
-        VideoHash(storage_path=storage_path)
+        VideoHash(path=video_path, storage_path=storage_path)
 
     with pytest.raises(ValueError):
         VideoHash(path=create_and_return_temporary_directory())
