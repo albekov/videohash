@@ -1,0 +1,27 @@
+[project]
+name = "videohash"
+description = ""
+readme = "README.md"
+version = "0.1.0"
+requires-python = ">=3.13"
+dependencies = [
+    "chardet>=5.2.0",
+    "imagedominantcolor>=1.0.1",
+    "imagehash>=4.3.2",
+    "pillow>=12.0.0",
+    "yt-dlp>=2025.11.12",
+]
+
+[dependency-groups]
+dev = [
+    "black>=25.11.0",
+    "codecov>=2.1.13",
+    "flake8>=7.3.0",
+    "mypy>=1.18.2",
+    "patool>=4.0.2",
+    "pytest>=9.0.1",
+    "pytest-cov>=7.0.0",
+    "pyunpack>=0.3",
+    "requests>=2.32.5",
+    "types-pillow>=10.2.0.20240822",
+]
