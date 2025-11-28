@@ -39,13 +39,15 @@ def test_lavfi_color(temp_video_dir):
     vh.delete_storage_path()
 
 
-def test_similarity_different_quality(temp_video_dir):
+@pytest.mark.slow
+@pytest.mark.parametrize("duration", [1, 3, 5, 15, 30])
+def test_similarity_different_quality(temp_video_dir, duration):
     # Use smptebars as it has distinct features but no text that might get garbled
     high_res_path = str(temp_video_dir / "high_res.mp4")
     low_res_path = str(temp_video_dir / "low_res.mp4")
 
     # Generate high resolution video (HD)
-    generate_video_with_lavfi(high_res_path, "smptebars=duration=3:size=1280x720:rate=30")
+    generate_video_with_lavfi(high_res_path, f"smptebars=duration={duration}:size=1280x720:rate=30")
 
     # Scale down to low resolution (QVGA)
     scale_video(high_res_path, low_res_path, 320, 240)
