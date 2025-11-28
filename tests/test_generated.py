@@ -12,7 +12,7 @@ def temp_video_dir(tmp_path):
 
 def test_lavfi_testsrc(temp_video_dir):
     video_path = str(temp_video_dir / "testsrc.mp4")
-    generate_video_with_lavfi(video_path, "testsrc=duration=3:size=640x480:rate=30")
+    generate_video_with_lavfi(video_path, 3, "testsrc=duration=3:size=640x480:rate=30")
 
     vh = VideoHash(path=video_path)
     # We don't assert exact hash yet, just stability and no errors
@@ -23,7 +23,7 @@ def test_lavfi_testsrc(temp_video_dir):
 
 def test_lavfi_smptebars(temp_video_dir):
     video_path = str(temp_video_dir / "smptebars.mp4")
-    generate_video_with_lavfi(video_path, "smptebars=duration=3:size=640x480:rate=30")
+    generate_video_with_lavfi(video_path, 3, "smptebars=duration=3:size=640x480:rate=30")
 
     vh = VideoHash(path=video_path)
     assert vh.hash is not None
@@ -32,7 +32,7 @@ def test_lavfi_smptebars(temp_video_dir):
 
 def test_lavfi_color(temp_video_dir):
     video_path = str(temp_video_dir / "color.mp4")
-    generate_video_with_lavfi(video_path, "color=c=red:duration=3:size=640x480:rate=30")
+    generate_video_with_lavfi(video_path, 3, "color=c=red:duration=3:size=640x480:rate=30")
 
     vh = VideoHash(path=video_path)
     assert vh.hash is not None
@@ -47,7 +47,11 @@ def test_similarity_different_quality(temp_video_dir, duration):
     low_res_path = str(temp_video_dir / "low_res.mp4")
 
     # Generate high resolution video (HD)
-    generate_video_with_lavfi(high_res_path, f"smptebars=duration={duration}:size=1280x720:rate=30")
+    generate_video_with_lavfi(
+        high_res_path,
+        duration,
+        "smptebars=size=1280x720:rate=30",
+    )
 
     # Scale down to low resolution (QVGA)
     scale_video(high_res_path, low_res_path, 320, 240)

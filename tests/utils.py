@@ -1,7 +1,7 @@
 import subprocess
 
 
-def generate_video_with_lavfi(output_path: str, lavfi_str: str = "testsrc=duration=5:size=1280x720:rate=30"):
+def generate_video_with_lavfi(output_path: str, duration: int, lavfi_str: str = "testsrc=duration=5:size=1280x720:rate=30"):
     """
     Generates a video file using ffmpeg's lavfi (Libavfilter) input virtual device.
     """
@@ -11,6 +11,8 @@ def generate_video_with_lavfi(output_path: str, lavfi_str: str = "testsrc=durati
         "lavfi",
         "-i",
         lavfi_str,
+        "-t",
+        str(duration),
         "-y",  # Overwrite output files without asking
         output_path,
     ]
