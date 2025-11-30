@@ -15,10 +15,10 @@ def test_all():
     videohash1.delete_storage_path()
     hash1 = videohash1.hash
     hash_hex1 = videohash1.hash_hex
-    assert hash1 == "0b1010100110101001111111001111101101011110101100010000001000000000"
-    assert str(videohash1) == "0b1010100110101001111111001111101101011110101100010000001000000000"
-    assert hash_hex1 == "0xa9a9fcfb5eb10200"
-    assert videohash1 - "0b1010100110101001111111001111101101011110101100010000001000000000" == 0
+    assert hash1 == "0b1111100000101000111111111111101110111110010011010000001100000011"
+    assert str(videohash1) == "0b1111100000101000111111111111101110111110010011010000001100000011"
+    assert hash_hex1 == "0xf828fffbbe4d0303"
+    assert videohash1 - "0b1111100000101000111111111111101110111110010011010000001100000011" == 0
     assert hash_hex1 in repr(videohash1)
     assert hash1 in repr(videohash1)
     assert (len(videohash1) - 2) == videohash1.bits_in_hash
@@ -40,14 +40,14 @@ def test_all():
     videohash2 = VideoHash(path=video_path, frame_interval=3)
     hash2 = videohash2.hash
     hash_hex2 = videohash2.hash_hex
-    assert hash2 == "0b1010100110101001111111001111101101011110101100010000001000000000"
-    assert hash_hex2 == "0xa9a9fcfb5eb10200"
+    assert hash2 == "0b1111100000101000111111111111101110111110010011010000001100000011"
+    assert hash_hex2 == "0xf828fffbbe4d0303"
 
     videohash3 = VideoHash(path=video_path)
     hash3 = videohash3.hash
     hash_hex3 = videohash3.hash_hex
-    assert hash3 == "0b0111010001000111111011001111101100101110111010010000001100000001"
-    assert hash_hex3 == "0x7447ecfb2ee90301"
+    assert hash3 == "0b0101100001010111111110101111101101000010010011100000001100000011"
+    assert hash_hex3 == "0x5857fafb424e0303"
 
     assert hash1 == hash2
     assert videohash1.is_similar(videohash2)

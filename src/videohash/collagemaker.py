@@ -39,12 +39,14 @@ def make_collage(
     Img7 Img8 Img9
 
     If the number of images is not a perfect square, calculate the
-    square root and round it to the nearest integer.
+    square root and round it up to the nearest integer (ceiling).
+    The grid is filled by distributing the available images
+    evenly across the total number of cells in the grid.
 
     If number of images is 13, which is not a perfect square.
 
     sqrt(13) = 3.605551275463989
-    round(3.605551275463989) = 4
+    ceil(3.605551275463989) = 4
 
     Thus the image should be 4x4 frames of collage.
 
@@ -53,13 +55,12 @@ def make_collage(
     |  Img1  Img2  Img3   Img4  |
     |  Img5  Img6  Img7   Img8  |
     |  Img9  Img10 Img11  Img12 |
-    |  Img13  X     X      X    |
+    |  Img13 Img14 Img15  Img16 |
     -----------------------------
 
-    X denotes the empty space due to lack of images.
-    But the empty spaces will not affect the robustness
-    as downsized/transcoded version of the video will also
-    produce these vacant spaces.
+    Note: The indices in the example above (Img1...Img16) represent
+    the positions in the grid. The actual images are selected from
+    the input list to fill these positions. There are no empty spaces.
 
     :param image_list: A python list containing the list of absolute
                        path of images that are to be added in the collage.
@@ -78,7 +79,7 @@ def make_collage(
     """
     number_of_images = len(image_list)
 
-    images_per_row_in_collage = int(round(sqrt(number_of_images)))
+    images_per_row_in_collage = int(ceil(sqrt(number_of_images)))
 
     if number_of_images == 0:
         raise CollageOfZeroFramesError("Can not make a collage of zero images.")
@@ -104,9 +105,9 @@ def make_collage(
     scaled_frame_image_width = ceil(frame_image_width * scale)
     scaled_frame_image_height = ceil(frame_image_height * scale)
 
-    # Divide the number of images by images_per_row_in_collage. The later
-    # was calculated by taking the square root of total number of images.
-    number_of_rows = ceil(number_of_images / images_per_row_in_collage)
+    # Set the number of rows equal to the number of images per row.
+    # This ensures the collage is a square (or as close as possible).
+    number_of_rows = images_per_row_in_collage
 
     # Multiplying the height of one downsized image with number of rows.
     # Height of 1 downsized image is product of scale and frame_image_height
@@ -119,52 +120,36 @@ def make_collage(
     collage_image = Image.new("RGB", (collage_image_width, collage_image_height))
 
     # keep track of the x and y coordinates of the resized frame images
-    i, j = (0, 0)
 
+    frames_count = number_of_rows * images_per_row_in_collage
     # iterate the frames and paste them on their position on the collage_image
-    for count, frame_path in enumerate(image_list):
-        # Set the x coordinate to zero if we are on the first column
-        # If images_per_row_in_collage is 4
-        # then 0,4,8 and so on should have their x coordinate as 0
-        if (count % images_per_row_in_collage) == 0:
-            i = 0
+    for j in range(number_of_rows):
+        for i in range(images_per_row_in_collage):
+            frame_index = j * images_per_row_in_collage + i
+            # Calculate the image index based on the frame index.
+            # We use linear interpolation to map the grid position (frame_index)
+            # to the image list index.
+            # Formula: frame_index * (total_images / total_grid_slots)
+            # This ensures even distribution and includes the last image.
+            image_index = int(frame_index * len(image_list) / frames_count)
+            frame_path = image_list[image_index]
 
-        # open the frame image, must open it to resize it using the thumbnail method
-        frame = Image.open(frame_path)
+            # open the frame image, must open it to resize it using the thumbnail method
+            frame = Image.open(frame_path)
 
-        # scale the opened frame images
-        frame.thumbnail((scaled_frame_image_width, scaled_frame_image_height), Image.Resampling.LANCZOS)
+            # scale the opened frame images
+            frame = frame.resize((scaled_frame_image_width, scaled_frame_image_height), Image.Resampling.LANCZOS)
 
-        # set the value of x to that of i's value.
-        # i is set to 0 if we are on the first column.
-        x = i
+            # set the value of x to that of i's value.
+            # i is set to 0 if we are on the first column.
+            x = i * scaled_frame_image_width
 
-        # It ensures that y coordinate stays the same for any given row.
-        # The floor of a real number is the largest integer that is less
-        # than or equal to the number. floor division is used because of
-        # the zero based indexing, the floor of the division stays same
-        # for an entier row as the decimal values are negled by the floor.
-        # for the first row the result of floor division is always zero and
-        # the product of 0 with scaled_frame_image_height is also zero, they
-        # y coordinate for the first row is 0.
-        # For the second row the result of floor division is one and the prodcut
-        # with scaled_frame_image_height ensures that the y coordinate is
-        # scaled_frame_image_height below the first row.
-        y = (j // images_per_row_in_collage) * scaled_frame_image_height
+            # Calculate y coordinate based on the current row index j.
+            y = j * scaled_frame_image_height
 
-        # paste the frame image on the newly created base image(base image is black)
-        collage_image.paste(frame, (x, y))
-        frame.close()
-
-        # increase the x coordinate by scaled_frame_image_width
-        # to get the x coordinate of the next frame. unless the next image
-        # will be on the very first column this will be the x coordinate.
-        i = i + scaled_frame_image_width
-
-        # increase the value of j by 1, this is to calculate the y coordinate of
-        # next image. The increased number will be floor divided by images_per_row_in_collage
-        # therefore the y coordinate stays the same for any given row.
-        j += 1
+            # paste the frame image on the newly created base image(base image is black)
+            collage_image.paste(frame, (x, y))
+            frame.close()
 
     # save the base image with all the scaled frame images embeded on it.
     collage_image.save(output_path)
